@@ -161,4 +161,33 @@ cost, pos = optimizer.optimize(f, iters=50)
 
 print((predict(pos) == y).mean())
 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+
+X = X_test
+y = y_test
+
+y_pred = predict(pos)
+print("Accuracy: ", accuracy_score(y, y_pred))
+print(confusion_matrix(y, y_pred))
+print(classification_report(y, y_pred))
+
+def calculate_accuracy(pos):
+    y_pred = predict(pos)
+    return (y_pred == y).mean()
+
+# Get the positions at each iteration
+pos_history = optimizer.pos_history
+
+# Calculate the accuracy for each particle at each iteration
+accuracy_history = [[calculate_accuracy(pos) for pos in pos_iter] for pos_iter in pos_history]
+
+# Calculate the best accuracy at each iteration
+best_accuracy_history = np.max(accuracy_history, axis=1)
+
+# Plot the best accuracy history
+plt.plot(best_accuracy_history)
+plt.title('Evolution of best accuracy along iterations')
+plt.xlabel('Iterations')
+plt.ylabel('Best Accuracy')
+plt.show()

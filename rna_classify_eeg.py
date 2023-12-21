@@ -52,8 +52,28 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=
 # split data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-model.fit(X_train, y_train, epochs=50, batch_size=100)
+history = model.fit(X_train, y_train, epochs=50, batch_size=100)
 
 # Evaluate the model
 loss, accuracy = model.evaluate(X_test, y_test)
 print(f'Test accuracy: {accuracy}')
+
+# plot accuracy history
+plt.plot(history.history['accuracy'], label='train')
+plt.title('Evolution of best accuracy along iterations')
+plt.xlabel('Iterations')
+plt.ylabel('Best Accuracy')
+plt.legend()
+plt.show()
+
+# acuracy, precision, f1-score, recall
+y_pred = model.predict(X_test)
+y_pred = np.argmax(y_pred, axis=1)
+print(classification_report(y_test, y_pred))
+
+# Confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+print(cm)
+
+
+

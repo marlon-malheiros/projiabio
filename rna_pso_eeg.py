@@ -158,6 +158,8 @@ def predict(pos):
     y_pred = np.argmax(logits, axis=1)
     return y_pred
 
+
+
 # Initialize swarm
 options = {'c1': 0.5, 'c2': 0.7, 'w':0.9}
 
@@ -175,4 +177,46 @@ optimizer = ps.single.GlobalBestPSO(n_particles=40, dimensions=init_pos.shape[1]
 
 cost, pos = optimizer.optimize(f, iters=50)
 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+X = X_test
+y = y_test
+
+y_pred = predict(pos)
+
 print((predict(pos) == y).mean())
+
+print("Accuracy: ", accuracy_score(y, y_pred))
+print(confusion_matrix(y, y_pred))
+print(classification_report(y, y_pred))
+
+
+
+def calculate_accuracy(pos):
+    y_pred = predict(pos)
+    return (y_pred == y).mean()
+
+# Get the positions at each iteration
+pos_history = optimizer.pos_history
+
+# Calculate the accuracy for each particle at each iteration
+accuracy_history = [[calculate_accuracy(pos) for pos in pos_iter] for pos_iter in pos_history]
+
+# Calculate the best accuracy at each iteration
+best_accuracy_history = np.max(accuracy_history, axis=1)
+
+# Plot the best accuracy history
+plt.plot(best_accuracy_history)
+plt.title('Evolution of best accuracy along iterations')
+plt.xlabel('Iterations')
+plt.ylabel('Best Accuracy')
+plt.show()
+
+# Juntando os 3 graficos
+g1 = best_accuracy_history
+g2 = best_accuracy_history
+# rna -> plt.plot(history.history['accuracy'], label='train')
+plt.plot(g1)
+plt.plot(g2)
+plt.plot(history.history['accuracy'], label='train')
+
